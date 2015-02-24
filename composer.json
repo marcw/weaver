@@ -3,9 +3,7 @@
     "description": "A small library that weaves HTML together",
     "require": {},
     "require-dev": {
-        "phpunit/phpunit": "~4.5",
-        "icap/html-diff": "~1.0",
-        "mihaeu/html-formatter": "*"
+        "phpunit/phpunit": "~4.5"
     },
     "license": "MIT",
     "autoload": {

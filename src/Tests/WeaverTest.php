@@ -3,8 +3,6 @@
 namespace MarcW\Weaver\Tests;
 
 use MarcW\Weaver\Weaver;
-use Icap\HtmlDiff\HtmlDiff;
-use Mihaeu\HtmlFormatter;
 
 /**
  * WeaverTest
@@ -13,53 +11,41 @@ use Mihaeu\HtmlFormatter;
  */
 class WeaverTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @dataProvider provideTestWeaver
-     */
-    public function testWeaver($body, array $fragments, $expected)
+    public function testWeaver()
     {
         $weaver = new Weaver();
+        $body = "<p>foo</p><p>bar</p>";
+        $fragments = ['<img src="foobar" />'];
         $result = $weaver->weave($body, $fragments);
-        $diff = new HtmlDiff($expected, $result, true);
-        $out = $diff->outputDiff();
-        //file_put_contents("result", HtmlFormatter::format($result));
-        //file_put_contents("expected", HtmlFormatter::format($expected));
-        $mod = $out->getModifications();
-        $this->assertEquals(0, $mod['added']);
-        $this->assertEquals(0, $mod['removed']);
-        $this->assertEquals(0, $mod['changed']);
+        $this->assertEquals('<p>foo</p><img src="foobar" /><p>bar</p>', $result);
     }
 
-    public function provideTestWeaver()
+    /**
+     * @dataProvider provideCreatePattern
+     */
+    public function testCreatePattern($blocks, $fragments, $pattern)
     {
-        $files = glob(__DIR__.'/data/*.test');
+        $this->assertEquals($pattern, Weaver::createPattern($blocks, $fragments));
+    }
 
-        $tests = [];
-        $part = '';
-        foreach ($files as $file) {
-            $test = ['body' => '', 'fragments' => [], 'result' => ''];
-            $fh = fopen($file, 'r');
-            while (($line = fgets($fh)) !== false) {
-                $clean = trim($line);
-                if ($clean == "--body--" || $clean == "--fragments--" || $clean == "--result--") {
-                    $part = $clean;
-                    continue;
-                }
-                if ($part == '--body--') {
-                    $test['body'] .= $line;
-                } else if ($part == '--fragments--') {
-                    $test['fragments'][] = $line;
-                } else if ($part == '--result--') {
-                    $test['result'] .= $line;
-                } else {
-                    throw new \LogicException("The test file is malformed. It must contains a --body--, a --fragments--, and a --result-- section");
-                }
-            }
-
-            $tests[] = [$test['body'], $test['fragments'], $test['result']];
-            fclose($fh);
-        }
-
-        return $tests;
+    public function provideCreatePattern()
+    {
+        return [
+            [0, 3, '---'],
+            [3, 0, '***'],
+            [1, 1, '*-'],
+            [1, 2, '*--'],
+            [2, 1, '*-*'],
+            [4, 1, '**-**'],
+            [4, 3, '*-*-*-*'],
+            [4, 4, '*-*-*-*-'],
+            [5, 1, '**-***'],
+            [5, 4, '*-*-*-*-*'],
+            [7, 1, '***-****'],
+            [8, 1, '****-****'],
+            [8, 7, '*-*-*-*-*-*-*-*'],
+            [8, 8, '*-*-*-*-*-*-*-*-'],
+            [2, 14, '*-*-------------'],
+        ];
     }
 }
