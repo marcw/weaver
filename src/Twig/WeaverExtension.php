@@ -16,7 +16,7 @@ class WeaverExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_Simple_Function('weave', array($this->weaver, 'weave'))
+            new \Twig_SimpleFunction('weave', array($this->weaver, 'weave'))
         ];
     }
 
