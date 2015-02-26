@@ -20,6 +20,15 @@ class WeaverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<p>foo</p><img src="foobar" /><p>bar</p>', $result);
     }
 
+    public function testWeaverWithEmptyFragments()
+    {
+        $weaver = new Weaver();
+        $body = "<p>foo</p><p>bar</p>";
+        $fragments = ['<img src="foobar" />', '', '', '', ''];
+        $result = $weaver->weave($body, $fragments);
+        $this->assertEquals('<p>foo</p><img src="foobar" /><p>bar</p>', $result);
+    }
+
     public function testWeaverExplicit()
     {
         $weaver = new Weaver();

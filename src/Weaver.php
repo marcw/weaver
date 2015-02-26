@@ -59,6 +59,9 @@ class Weaver
      */
     public function weave($body, array $fragments = [])
     {
+        $fragments = array_filter($fragments, function($value) {
+            return ($value != "" && $value != null);
+        });
         $nFragments = count($fragments);
         if ($nFragments == 0) {
             return $body;
