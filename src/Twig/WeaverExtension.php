@@ -10,13 +10,13 @@ class WeaverExtension extends \Twig_Extension
 
     public function __construct()
     {
-        $weaver = new Weaver();
+        $this->weaver = new Weaver();
     }
 
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('weave', array($this->weaver, 'weave'))
+            new \Twig_SimpleFunction('weave', [$this->weaver, 'weave'], array('is_safe' => ['html']))
         ];
     }
 
