@@ -57,9 +57,22 @@ class Weaver
      * @param array $fragments
      * @return
      */
-    public function weave($body, array $fragments = array())
+    public function weave($body, array $fragments = [])
     {
-        if (count($fragments) == 0) {
+        $nFragments = count($fragments);
+        if ($nFragments == 0) {
+            return $body;
+        }
+
+        $nExplicit = substr_count($body, '__WEAVE__');
+        if ($nExplicit > 0) {
+            for($i = 0; $i < $nExplicit; $i++) {
+                $body = preg_replace('/__WEAVE__/', array_shift($fragments), $body, 1);
+            }
+        }
+
+        $nFragments = count($fragments);
+        if ($nFragments == 0) {
             return $body;
         }
 
@@ -72,7 +85,7 @@ class Weaver
             return implode("", $fragments);
         }
 
-        $pattern = $this->createPattern($blocks->length, count($fragments));
+        $pattern = $this->createPattern($blocks->length, $nFragments);
 
         $fabric = '';
         // we now weave the pattern

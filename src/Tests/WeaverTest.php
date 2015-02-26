@@ -20,6 +20,24 @@ class WeaverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<p>foo</p><img src="foobar" /><p>bar</p>', $result);
     }
 
+    public function testWeaverExplicit()
+    {
+        $weaver = new Weaver();
+        $body = "<p>foo</p><p>bar</p>__WEAVE__";
+        $fragments = ['<img src="foobar" />'];
+        $result = $weaver->weave($body, $fragments);
+        $this->assertEquals('<p>foo</p><p>bar</p><img src="foobar" />', $result);
+    }
+
+    public function testWeaverExplicitRemovesAllOccurencesOfPlaceholder()
+    {
+        $weaver = new Weaver();
+        $body = "__WEAVE__<p>foo</p><p>bar</p>__WEAVE__";
+        $fragments = ['<img src="foobar" />'];
+        $result = $weaver->weave($body, $fragments);
+        $this->assertEquals('<img src="foobar" /><p>foo</p><p>bar</p>', $result);
+    }
+
     /**
      * @dataProvider provideCreatePattern
      */
