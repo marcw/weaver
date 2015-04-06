@@ -80,7 +80,7 @@ class Weaver
         }
 
         $dom = new \DOMDocument();
-        $dom->loadHTML((string)$body);
+        $dom->loadHTML(utf8_decode((string)$body));
         $xpath = new \DOMXPath($dom);
 
         $blocks = $xpath->query("/html/body/*");
